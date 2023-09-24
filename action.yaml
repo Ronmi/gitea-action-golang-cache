@@ -38,9 +38,9 @@ runs:
       run: |
         echo "build-cache-path=$(go env GOCACHE)" >>"$GITHUB_OUTPUT"
         echo "module-cache-path=$(go env GOMODCACHE)" >>"$GITHUB_OUTPUT"
-        cacheKeyRoot="${{ runner.os }}-golang${{ inputs.cache-key-suffix && format('-{0}',inputs.cache-key-suffix) }}-"
+        cacheKeyRoot="${{ runner.os }}-${{ runner.arch }}-golang${{ inputs.cache-key-suffix && format('-{0}',inputs.cache-key-suffix) }}-"
         echo "cache-key-restore=$cacheKeyRoot" >>"$GITHUB_OUTPUT"
-        echo "cache-key=${cacheKeyRoot}${{ hashFiles('**/go.sum') }}" >>"$GITHUB_OUTPUT"
+        echo "cache-key=${cacheKeyRoot}$(find . -type f -name go.sum -exec cat "{}" ";" | sha256sum -b | cut -d " " -f 1)" >>"$GITHUB_OUTPUT"
       shell: bash
     - name: Setup Golang cache
       uses: actions/cache@v3
